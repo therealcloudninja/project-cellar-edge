@@ -1,0 +1,6 @@
+all:
+  hosts:
+    nwedge-edge01:
+      ansible_host: 192.168.138.208
+      ansible_user: nwedge-admin
+      ansible_python_interpreter: /usr/bin/python3

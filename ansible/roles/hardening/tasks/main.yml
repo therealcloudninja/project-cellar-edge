@@ -1,0 +1,69 @@
+---
+- name: Install UFW and fail2ban
+  apt:
+    name:
+      - ufw
+      - fail2ban
+    state: present
+  become: true
+
+- name: Allow SSH through UFW
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+  become: true
+
+- name: Set UFW default deny incoming
+  ufw:
+    direction: incoming
+    policy: deny
+  become: true
+
+- name: Set UFW default allow outgoing
+  ufw:
+    direction: outgoing
+    policy: allow
+  become: true
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+  become: true
+
+- name: Ensure fail2ban is running and enabled
+  systemd:
+    name: fail2ban
+    state: started
+    enabled: true
+  become: true
+
+- name: Disable SSH password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  become: true
+  notify: Restart sshd
+
+- name: Disable SSH root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  become: true
+  notify: Restart sshd
+
+- name: Install unattended-upgrades
+  apt:
+    name: unattended-upgrades
+    state: present
+  become: true
+
+- name: Enable unattended-upgrades
+  debconf:
+    name: unattended-upgrades
+    question: unattended-upgrades/enable_auto_updates
+    value: "true"
+    vtype: boolean
+  become: true

@@ -1,0 +1,34 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+  become: true
+
+- name: Install baseline packages
+  apt:
+    name:
+      - curl
+      - vim
+      - htop
+      - net-tools
+      - unzip
+      - ca-certificates
+      - gnupg
+    state: present
+  become: true
+
+- name: Set timezone
+  timezone:
+    name: Asia/Singapore
+  become: true
+
+- name: Ensure NTP time sync is enabled
+  command: timedatectl set-ntp true
+  become: true
+  changed_when: false

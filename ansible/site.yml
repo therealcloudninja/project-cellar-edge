@@ -1,0 +1,6 @@
+---
+- name: Configure edge nodes
+  hosts: all
+  roles:
+    - common
+    - hardening
