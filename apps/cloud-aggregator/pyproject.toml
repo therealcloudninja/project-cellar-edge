@@ -1,0 +1,24 @@
+[project]
+name = "cloud-aggregator"
+version = "0.1.0"
+description = "Cloud ingest service for wine storage telemetry"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "httpx>=0.27.0",
+    "ruff>=0.5.0",
+    "black>=24.0.0",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.setuptools.packages.find]
+where = ["src"]
