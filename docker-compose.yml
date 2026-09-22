@@ -1,0 +1,24 @@
+services:
+  cloud-aggregator:
+    build:
+      context: ./apps/cloud-aggregator
+    image: cloud-aggregator:local
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  edge-collector:
+    build:
+      context: ./apps/edge-collector
+    image: edge-collector:local
+    environment:
+      AGGREGATOR_URL: http://cloud-aggregator:8000
+    volumes:
+      - edge-buffer-data:/data
+    depends_on:
+      cloud-aggregator:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  edge-buffer-data:
