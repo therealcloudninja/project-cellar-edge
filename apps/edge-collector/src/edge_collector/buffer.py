@@ -6,6 +6,7 @@ so that buffered readings survive even if the edge-collector process itself
 restarts while the network is still down.
 """
 
+import os
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime
@@ -13,7 +14,7 @@ from pathlib import Path
 
 from edge_collector.sensors import SensorReading
 
-DEFAULT_DB_PATH = Path("edge_buffer.db")
+DEFAULT_DB_PATH = Path(os.getenv("EDGE_BUFFER_DB_PATH", "edge_buffer.db"))
 
 
 @dataclass

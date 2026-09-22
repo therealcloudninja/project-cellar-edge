@@ -17,16 +17,14 @@ COPY --from=builder /root/.local /home/appuser/.local
 
 ENV PATH=/home/appuser/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    EDGE_BUFFER_DB_PATH=/data/edge_buffer.db \
-    HEARTBEAT_PATH=/tmp/edge_collector.heartbeat
-
-RUN mkdir -p /data && chown appuser:appuser /data
+    PYTHONDONTWRITEBYTECODE=1
 
 USER appuser
 WORKDIR /home/appuser
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD python -c "import time,sys,pathlib; f=pathlib.Path('/tmp/edge_collector.heartbeat'); sys.exit(0 if f.exists() and time.time()-float(f.read_text())<90 else 1)"
+EXPOSE 8000
 
-CMD ["python", "-m", "edge_collector.runner"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)" || exit 1
+
+CMD ["uvicorn", "cloud_aggregator.main:app", "--host", "0.0.0.0", "--port", "8000"]
